@@ -7,3 +7,4 @@ entities/geometry/__pycache__/rectangle.cpython-37.pyc
 level/__pycache__/playfield.cpython-37.pyc
 utilities/__pycache__/input.cpython-37.pyc
 utilities/__pycache__/static_camera.cpython-37.pyc
+utilities/__pycache__/cameras.cpython-37.pyc
