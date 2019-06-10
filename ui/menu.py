@@ -2,8 +2,8 @@ from utilities.color import Color
 
 
 class Menu:
-    def __init__(self, camera):
-        self.camera = camera
+    def __init__(self):
+        ""
 
     def update(self, delta_time):
         ""

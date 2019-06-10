@@ -2,6 +2,7 @@ import pygame
 from pygame import Rect
 from entities.entity import Entity
 from utilities.color import Color
+from utilities.camera import Camera
 
 
 class Rectangle(Entity):
@@ -10,15 +11,15 @@ class Rectangle(Entity):
         self.thickness = thickness
         self.color = color
 
-    def draw(self, surface, camera):
+    def draw(self, surface):
         pygame.draw.rect(
             surface,
             self.color,
             (
-                -camera.top_left.x + self.x * camera.scale,
-                -camera.top_left.y + self.y * camera.scale,
-                self.width * camera.scale,
-                self.height * camera.scale
+                -Camera.TOP_LEFT.x + self.x * Camera.SCALE,
+                -Camera.TOP_LEFT.y + self.y * Camera.SCALE,
+                self.width * Camera.SCALE,
+                self.height * Camera.SCALE
             ),
-            int(self.thickness * camera.scale)
+            int(self.thickness * Camera.SCALE)
         )
