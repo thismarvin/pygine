@@ -30,3 +30,21 @@ class StaticCamera:
                                                 StaticCamera.HORIZONTAL_LETTERBOX + 32, StaticCamera.BOUNDS.height + 64))
         pygame.draw.rect(surface, Color.BLACK, (StaticCamera.HORIZONTAL_LETTERBOX +
                                                 StaticCamera.BOUNDS.width, -32, StaticCamera.HORIZONTAL_LETTERBOX, StaticCamera.BOUNDS.height + 64))
+
+
+class Camera:
+    SCALE = 0
+    TOP_LEFT = Vector2(0, 0)
+    BOUNDS = Rect(0, 0, 0, 0)
+
+    def initialize(dimensions=(0, 0), scale=1):
+        Camera.SCALE = scale
+        Camera.TOP_LEFT = Vector2(0,  0)
+        Camera.BOUNDS = Rect(
+            Camera.TOP_LEFT.x, Camera.TOP_LEFT.y, dimensions[0], dimensions[1])
+
+    def update(top_left=Vector2(0, 0)):
+        Camera.TOP_LEFT.x = top_left.x - StaticCamera.HORIZONTAL_LETTERBOX
+        Camera.TOP_LEFT.y = top_left.y - StaticCamera.VERTICAL_LETTERBOX
+        Camera.BOUNDS.x = Camera.TOP_LEFT.x
+        Camera.BOUNDS.y = Camera.TOP_LEFT.y

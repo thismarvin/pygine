@@ -3,8 +3,8 @@ from enum import Enum
 from level.playfield import Playfield
 from ui.menu import Menu
 from utilities.color import Color
-from utilities.camera import Camera
-from utilities.static_camera import StaticCamera
+from utilities.cameras import StaticCamera
+from utilities.cameras import Camera
 from utilities.input import Input
 from utilities.input import InputType
 

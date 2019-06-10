@@ -3,7 +3,7 @@ from entities.geometry.rectangle import Rectangle
 from utilities.color import Color
 from utilities.input import Input
 from utilities.input import InputType
-from utilities.camera import Camera
+from utilities.cameras import Camera
 
 
 class Playfield:
