@@ -34,7 +34,7 @@ class Game:
 
         Game.STATE = GameState.PLAYFIELD
         self.delta_time = 0
-        self.ticks = 0        
+        self.ticks = 0
         self.menu = Menu()
         self.playfield = Playfield()
         self.input = Input()
@@ -103,6 +103,9 @@ class Game:
                 self.static_camera.apply_vertical_letterbox(
                     (self.window_height - self.game_height * self.scale) / 2)
 
+    def quit_game(self):
+        Game.STATE = GameState.NONE
+
     def toggle_fullscreen(self):
         self.fullscreen = not self.fullscreen
         if self.fullscreen:
@@ -122,14 +125,14 @@ class Game:
     def update_input(self):
         self.input.update()
         if self.input.pressing(InputType.QUIT):
-            Game.STATE = GameState.NONE
+            self.quit_game()
         if self.input.pressing(InputType.TOGGLE_FULLSCREEN):
             self.toggle_fullscreen()
 
     def update_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                Game.STATE = GameState.NONE
+                self.quit_game()
 
     def clear_screen(self, color=Color.BLACK):
         "Clear the screen in preparation for the next draw call."
@@ -148,7 +151,8 @@ class Game:
         self.update_events()
 
     def draw(self):
-        self.clear_screen(Color.SKY_BLUE)
+        self.clear_screen(
+            Color.SKY_BLUE) if Game.STATE != GameState.NONE else self.clear_screen(Color.BLACK)
 
         if Game.STATE == GameState.MENU:
             self.menu.draw(self.window)
