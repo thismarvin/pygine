@@ -1,5 +1,4 @@
 import pygame
-from pygame import Rect
 from entities.entity import Entity
 from utilities.color import Color
 from utilities.camera import Camera
@@ -16,8 +15,8 @@ class Rectangle(Entity):
             surface,
             self.color,
             (
-                -Camera.TOP_LEFT.x + self.scaled_location().x,
-                -Camera.TOP_LEFT.y + self.scaled_location().y,
+                self.scaled_location().x,
+                self.scaled_location().y,
                 self.scaled_width(),
                 self.scaled_height()
             ),

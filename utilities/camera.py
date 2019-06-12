@@ -1,5 +1,4 @@
 import pygame
-from pygame import Rect
 from utilities.vector import Vector2
 from utilities.color import Color
 
@@ -8,13 +7,13 @@ class StaticCamera:
     SCALE = 0
     HORIZONTAL_LETTERBOX = 0
     VERTICAL_LETTERBOX = 0
-    BOUNDS = Rect(0, 0, 0, 0)
+    BOUNDS = pygame.Rect(0, 0, 0, 0)
 
     def __init__(self, dimensions=(0, 0), scale=1):
         StaticCamera.HORIZONTAL_LETTERBOX = 0
         StaticCamera.VERTICAL_LETTERBOX = 0
         StaticCamera.SCALE = scale
-        StaticCamera.BOUNDS = Rect(
+        StaticCamera.BOUNDS = pygame.Rect(
             0, 0, dimensions[0] * scale, dimensions[1] * scale)
 
     def apply_horizontal_letterbox(self, horizontal_letterbox=0):
@@ -37,13 +36,13 @@ class StaticCamera:
 class Camera:
     SCALE = 0
     TOP_LEFT = Vector2()
-    BOUNDS = Rect(0, 0, 0, 0)
+    BOUNDS = pygame.Rect(0, 0, 0, 0)
 
     def __init__(self, top_left=Vector2(0, 0)):
         Camera.SCALE = StaticCamera.SCALE
         Camera.TOP_LEFT.x = top_left.x - StaticCamera.HORIZONTAL_LETTERBOX
         Camera.TOP_LEFT.y = top_left.y - StaticCamera.VERTICAL_LETTERBOX
-        Camera.BOUNDS = Rect(
+        Camera.BOUNDS = pygame.Rect(
             Camera.TOP_LEFT.x, Camera.TOP_LEFT.y, StaticCamera.BOUNDS.width, StaticCamera.BOUNDS.height)
 
     def update(self, top_left=Vector2(0, 0)):
