@@ -1,5 +1,5 @@
-from pygame.math import Vector2
 from entities.geometry.rectangle import Rectangle
+from utilities.Vector2 import Vector2
 from utilities.color import Color
 from utilities.input import Input
 from utilities.input import InputType
