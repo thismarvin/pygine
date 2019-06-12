@@ -8,3 +8,4 @@ level/__pycache__/playfield.cpython-37.pyc
 utilities/__pycache__/input.cpython-37.pyc
 utilities/__pycache__/static_camera.cpython-37.pyc
 utilities/__pycache__/cameras.cpython-37.pyc
+entities/user/__pycache__/player.cpython-37.pyc
