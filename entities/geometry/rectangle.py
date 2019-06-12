@@ -2,7 +2,7 @@ import pygame
 from pygame import Rect
 from entities.entity import Entity
 from utilities.color import Color
-from utilities.cameras import Camera
+from utilities.camera import Camera
 
 
 class Rectangle(Entity):

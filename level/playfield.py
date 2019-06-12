@@ -1,9 +1,9 @@
 from entities.user.player import Player
-from utilities.Vector2 import Vector2
+from utilities.vector import Vector2
 from utilities.color import Color
 from utilities.input import Input
 from utilities.input import InputType
-from utilities.cameras import Camera
+from utilities.camera import Camera
 
 
 class Playfield:

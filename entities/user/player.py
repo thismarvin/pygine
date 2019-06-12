@@ -2,7 +2,7 @@ from entities.entity import Entity
 from entities.geometry.rectangle import Rectangle
 from utilities.input import Input
 from utilities.input import InputType
-from utilities.cameras import Camera
+from utilities.camera import Camera
 
 
 class Player(Entity):

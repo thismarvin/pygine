@@ -1,6 +1,6 @@
 import pygame
 from pygame import Rect
-from utilities.Vector2 import Vector2
+from utilities.vector import Vector2
 from utilities.color import Color
 
 

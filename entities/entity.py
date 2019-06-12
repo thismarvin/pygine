@@ -1,6 +1,6 @@
 from pygame import Rect
-from utilities.Vector2 import Vector2
-from utilities.cameras import Camera
+from utilities.vector import Vector2
+from utilities.camera import Camera
 
 
 class Entity(object):
