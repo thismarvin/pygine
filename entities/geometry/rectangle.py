@@ -7,7 +7,7 @@ from utilities.cameras import Camera
 
 class Rectangle(Entity):
     def __init__(self, x=0, y=0, width=1, height=1, thickness=0, color=Color.WHITE):
-        Entity.__init__(self, x, y, width, height)
+        super(Rectangle, self).__init__(self, x, y, width, height)
         self.thickness = thickness
         self.color = color
 

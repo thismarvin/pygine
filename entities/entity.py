@@ -2,7 +2,7 @@ from pygame import Rect
 from utilities.Vector2 import Vector2
 
 
-class Entity:
+class Entity(object):
     def __init__(self, x=0, y=0, width=1, height=1):
         self.x = x
         self.y = y
