@@ -1,5 +1,6 @@
 from pygame import Rect
 from utilities.Vector2 import Vector2
+from utilities.cameras import Camera
 
 
 class Entity(object):
@@ -17,3 +18,18 @@ class Entity(object):
         self.y = y
         self.bounds = Rect(self.x, self.y, self.width, self.height)
         self.location = Vector2(self.x, self.y)
+
+    def scaled_location(self):
+        return Vector2(self.x * Camera.SCALE, self.y * Camera.SCALE)
+
+    def scaled_width(self):
+        return self.width * Camera.SCALE
+
+    def scaled_height(self):
+        return self.height * Camera.SCALE
+
+    def update(self, delta_time):
+        raise NotImplementedError("A class that inherits Entity did not implement the update(delta_time) method")
+
+    def draw(self, surface):
+        raise NotImplementedError("A class that inherits Entity did not implement the draw(surface) method")

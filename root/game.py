@@ -2,6 +2,7 @@ import pygame
 from enum import Enum
 from level.playfield import Playfield
 from ui.menu import Menu
+from utilities.Vector2 import Vector2
 from utilities.color import Color
 from utilities.cameras import StaticCamera
 from utilities.cameras import Camera
@@ -22,6 +23,7 @@ class Orientaion(Enum):
 
 class Game:
     "A modest game engine used to streamline the development of a game made using pygame"
+    STATE = GameState.NONE
 
     def __init__(self):
         self.initialize_pygame()
@@ -30,9 +32,9 @@ class Game:
         self.setup_pixel_scene(320, 180)
         self.setup_cameras()
 
+        Game.STATE = GameState.PLAYFIELD
         self.delta_time = 0
-        self.ticks = 0
-        self.state = GameState.PLAYFIELD
+        self.ticks = 0        
         self.menu = Menu()
         self.playfield = Playfield()
         self.input = Input()
@@ -83,23 +85,22 @@ class Game:
                 if self.game_height * self.scale > self.window_height:
                     self.scale = self.window_height / self.game_height
 
-        StaticCamera.initialize(
+        self.static_camera = StaticCamera(
             (self.game_width, self.game_height), self.scale)
-        Camera.initialize((self.game_width, self.game_height), self.scale)
 
         if self.fullscreen:
             if self.game_width * self.scale < self.display_width:
-                StaticCamera.apply_horizontal_letterbox(
+                self.static_camera.apply_horizontal_letterbox(
                     (self.display_width - self.game_width * self.scale) / 2)
             if self.game_height * self.scale < self.display_height:
-                StaticCamera.apply_vertical_letterbox(
+                self.static_camera.apply_vertical_letterbox(
                     (self.display_height - self.game_height * self.scale) / 2)
         else:
             if self.game_width * self.scale < self.window_width:
-                StaticCamera.apply_horizontal_letterbox(
+                self.static_camera.apply_horizontal_letterbox(
                     (self.window_width - self.game_width * self.scale) / 2)
             if self.game_height * self.scale < self.window_height:
-                StaticCamera.apply_vertical_letterbox(
+                self.static_camera.apply_vertical_letterbox(
                     (self.window_height - self.game_height * self.scale) / 2)
 
     def toggle_fullscreen(self):
@@ -121,45 +122,46 @@ class Game:
     def update_input(self):
         self.input.update()
         if self.input.pressing(InputType.QUIT):
-            self.state = GameState.NONE
+            Game.STATE = GameState.NONE
         if self.input.pressing(InputType.TOGGLE_FULLSCREEN):
             self.toggle_fullscreen()
 
     def update_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.state = GameState.NONE
+                Game.STATE = GameState.NONE
 
-    def clear_screen(self, window, color=Color.BLACK):
+    def clear_screen(self, color=Color.BLACK):
         "Clear the screen in preparation for the next draw call."
-        window.fill(color)
+        self.window.fill(color)
 
     def update(self):
         self.calculate_delta_time()
         self.update_input()
 
-        if self.state == GameState.MENU:
+        if Game.STATE == GameState.MENU:
             self.menu.update(self.delta_time)
 
-        elif self.state == GameState.PLAYFIELD:
+        elif Game.STATE == GameState.PLAYFIELD:
             self.playfield.update(self.delta_time)
 
         self.update_events()
 
     def draw(self):
-        self.clear_screen(self.window, Color.BLUE)
+        self.clear_screen(Color.SKY_BLUE)
 
-        if self.state == GameState.MENU:
+        if Game.STATE == GameState.MENU:
             self.menu.draw(self.window)
 
-        elif self.state == GameState.PLAYFIELD:
+        elif Game.STATE == GameState.PLAYFIELD:
             self.playfield.draw(self.window)
 
-        StaticCamera.draw(self.window)
+        self.static_camera.draw(self.window)
 
         pygame.display.update()
 
     def run(self):
-        while self.state != GameState.NONE:
+        while Game.STATE != GameState.NONE:
             self.update()
             self.draw()
+        pygame.quit()
