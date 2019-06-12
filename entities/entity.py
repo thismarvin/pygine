@@ -19,8 +19,16 @@ class Entity(object):
         self.bounds = Rect(self.x, self.y, self.width, self.height)
         self.location = Vector2(self.x, self.y)
 
+    def set_width(self, width):
+        self.width = width
+        self.bounds = Rect(self.x, self.y, self.width, self.height)
+
+    def set_height(self, height):
+        self.height = height
+        self.bounds = Rect(self.x, self.y, self.width, self.height)
+
     def scaled_location(self):
-        return Vector2(self.x * Camera.SCALE, self.y * Camera.SCALE)
+        return Vector2(self.x * Camera.SCALE - Camera.TOP_LEFT.x, self.y * Camera.SCALE - Camera.TOP_LEFT.y)
 
     def scaled_width(self):
         return self.width * Camera.SCALE
@@ -29,7 +37,9 @@ class Entity(object):
         return self.height * Camera.SCALE
 
     def update(self, delta_time):
-        raise NotImplementedError("A class that inherits Entity did not implement the update(delta_time) method")
+        raise NotImplementedError(
+            "A class that inherits Entity did not implement the update(delta_time) method")
 
     def draw(self, surface):
-        raise NotImplementedError("A class that inherits Entity did not implement the draw(surface) method")
+        raise NotImplementedError(
+            "A class that inherits Entity did not implement the draw(surface) method")
