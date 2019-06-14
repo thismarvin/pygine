@@ -10,6 +10,9 @@ class Rectangle(Entity):
         self.thickness = thickness
         self.color = color
 
+    def update(self, delta_time):
+        pass
+
     def draw(self, surface):
         pygame.draw.rect(
             surface,
