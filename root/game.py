@@ -1,6 +1,7 @@
 import pygame
 from enum import Enum
 from level.playfield import Playfield
+from level.hud import HUD
 from ui.menu import Menu
 from utilities.vector import Vector2
 from utilities.color import Color
@@ -29,7 +30,7 @@ class Game:
         self.initialize_pygame()
 
         self.setup_window(320, 240, 60, False, Orientaion.LANDSCAPE, "Pygine")
-        self.setup_pixel_scene(320, 180)
+        self.setup_pixel_scene(320*2, 180*2)
         self.setup_cameras()
 
         Game.STATE = GameState.PLAYFIELD
@@ -37,6 +38,7 @@ class Game:
         self.ticks = 0
         self.menu = Menu()
         self.playfield = Playfield()
+        self.hud = HUD()        
         self.input = Input()
 
     def initialize_pygame(self):
@@ -145,8 +147,9 @@ class Game:
         if Game.STATE == GameState.MENU:
             self.menu.update(self.delta_time)
 
-        elif Game.STATE == GameState.PLAYFIELD:
+        elif Game.STATE == GameState.PLAYFIELD:            
             self.playfield.update(self.delta_time)
+            self.hud.update(self.delta_time)
 
         self.update_events()
 
@@ -159,6 +162,7 @@ class Game:
 
         elif Game.STATE == GameState.PLAYFIELD:
             self.playfield.draw(self.window)
+            self.hud.draw(self.window)
 
         self.static_camera.draw(self.window)
 
