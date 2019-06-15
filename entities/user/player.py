@@ -74,5 +74,7 @@ class Player(Kinetic):
     def draw(self, surface):
         self.rectangle.draw(surface)
 
-        for r in self.collision_rectangles:
-            r.draw(surface)
+        from root.game import Game
+        if Game.DEBUG_MODE:
+            for r in self.collision_rectangles:
+                r.draw(surface)
