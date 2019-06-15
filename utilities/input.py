@@ -1,5 +1,6 @@
 import pygame
 from enum import Enum
+from utilities.timer import Timer
 
 
 class InputType(Enum):
@@ -14,16 +15,19 @@ class InputType(Enum):
     X = 7
     Y = 8
     START = 9
-    SELECT = 10    
+    SELECT = 10
 
     RESET = 11
     TOGGLE_FULLSCREEN = 12
-    QUIT = 13
+    TOGGLE_DEBUG = 13
+    QUIT = 14
 
 
 class Input:
     def __init__(self):
         self.key_state = None
+        self.timer = Timer(200)
+        self.no_spam = True
 
     def pressing(self, type=InputType.NONE):
         if type == InputType.UP:
@@ -48,13 +52,29 @@ class Input:
             return self.key_state[pygame.K_KP_ENTER]
 
         if type == InputType.RESET:
-            return self.key_state[pygame.K_r]
+            if self.key_state[pygame.K_r] and self.no_spam:
+                self.no_spam = False
+                self.timer.start()
+                return True
         if type == InputType.TOGGLE_FULLSCREEN:
-            return self.key_state[pygame.K_F10]
+            if self.key_state[pygame.K_F10] and self.no_spam:
+                self.no_spam = False
+                self.timer.start()
+                return True
+        if type == InputType.TOGGLE_DEBUG:
+            if self.key_state[pygame.K_F12] and self.no_spam:
+                self.no_spam = False
+                self.timer.start()
+                return True
+
         if type == InputType.QUIT:
             return self.key_state[pygame.K_ESCAPE] or self.key_state[pygame.K_BACKSPACE]
-            
+
         return False
 
     def update(self):
         self.key_state = pygame.key.get_pressed()
+        self.timer.update()
+        if not self.no_spam and self.timer.done:
+            self.no_spam = True
+            self.timer.reset()
