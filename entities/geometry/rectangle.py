@@ -2,6 +2,7 @@ import pygame
 from entities.entity import Entity
 from utilities.color import Color
 from utilities.camera import Camera
+from utilities.camera import CameraType
 
 
 class Rectangle(Entity):
@@ -13,13 +14,13 @@ class Rectangle(Entity):
     def update(self, delta_time):
         pass
 
-    def draw(self, surface):
+    def draw(self, surface, camera_type=CameraType.DYNAMIC):
         pygame.draw.rect(
             surface,
             self.color,
             (
-                self.scaled_location().x,
-                self.scaled_location().y,
+                self.scaled_location(camera_type).x,
+                self.scaled_location(camera_type).y,
                 self.scaled_width(),
                 self.scaled_height()
             ),

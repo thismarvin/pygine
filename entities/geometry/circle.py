@@ -2,6 +2,7 @@ import pygame
 from entities.entity import Entity
 from utilities.color import Color
 from utilities.camera import Camera
+from utilities.camera import CameraType
 from utilities.vector import Vector2
 
 
@@ -24,6 +25,14 @@ class Circle(Entity):
         if self.thickness > self.radius:
             self.thickness = self.radius
 
-    def draw(self, surface):
-        pygame.draw.circle(surface, self.color, (int(self.scaled_location().x), int(
-            self.scaled_location().y)), int(self.radius * Camera.SCALE), int(self.thickness * Camera.SCALE))
+    def draw(self, surface, camera_type=CameraType.DYNAMIC):
+        pygame.draw.circle(
+            surface,
+            self.color,
+            (
+                int(self.scaled_location(camera_type).x),
+                int(self.scaled_location(camera_type).y)
+            ),
+            int(self.radius * Camera.SCALE),
+            int(self.thickness * Camera.SCALE)
+        )
