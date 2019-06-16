@@ -17,6 +17,10 @@ class Entity(PygineObject):
         self.__bounds_that_actually_draw_correctly = Rectangle(
             self.x, self.y, self.width, self.height, self.color, 2)
 
+    def set_color(self, color):
+        self.color = color
+        self.__bounds_that_actually_draw_correctly.color = color
+
     def set_location(self, x, y):
         super().set_location(x, y)
         self.__bounds_that_actually_draw_correctly.set_location(self.x, self.y)
