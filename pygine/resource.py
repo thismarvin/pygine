@@ -1,16 +1,17 @@
 import pygame
-import os
+from pygine.base import PygineObject
+from pygine.draw import draw_image
 from enum import Enum
-from entities.entity import Entity
 
 
-class Type(Enum):
+class SpriteType(Enum):
     NONE = 0
     PLAYER = 1
+    BLOCK = 2
 
 
-class Sprite(Entity):
-    def __init__(self, x=0.0, y=0.0, sprite_type=Type.NONE):
+class Sprite(PygineObject):
+    def __init__(self, x=0.0, y=0.0, sprite_type=SpriteType.NONE):
         super(Sprite, self).__init__(x, y, 0, 0)
         self.type = sprite_type
         self.load_sprite()
@@ -21,20 +22,20 @@ class Sprite(Entity):
         self.set_width(width)
         self.set_height(height)
         self.sprite_sheet = pygame.image.load(
-            'assets/sprites/{}'.format(sprite_sheet_name))
+            'pygine/assets/sprites/{}'.format(sprite_sheet_name)
+        )
 
     def load_sprite(self):
-        if self.type == Type.NONE:
+        if self.type == SpriteType.NONE:
             pass
-        elif (self.type == Type.PLAYER):
-            self.sprite_setup(0, 0, 32, 48, "sprites.png")
+        elif (self.type == SpriteType.PLAYER):
+            self.sprite_setup(0, 0, 32, 32, "sprites.png")
+        elif (self.type == SpriteType.BLOCK):
+            self.sprite_setup(0, 32, 32, 32, "sprites.png")
 
         self.image = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         self.image.blit(self.sprite_sheet, (0, 0),
                         (self.sprite_x, self.sprite_y, self.width, self.height))
 
-    def draw(self, surface):
-        self.image = pygame.transform.scale(
-            self.image, (int(self.scaled_width()), int(self.scaled_height())))
-        surface.blit(self.image, (self.scaled_location().x,
-                                  self.scaled_location().y))
+    def draw(self, surface, camera_type):
+        draw_image(surface, self.image, self.bounds, camera_type)
