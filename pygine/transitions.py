@@ -1,7 +1,7 @@
 from pygine.base import PygineObject
 from pygine.geometry import Circle
 from pygine.utilities import Camera, CameraType, Color
-from enum import Enum
+from enum import IntEnum
 
 
 class Transition(PygineObject):
@@ -26,7 +26,7 @@ class Transition(PygineObject):
             "A class that inherits Transition did not implement the draw(surface) method")
 
 
-class PinholeType(Enum):
+class PinholeType(IntEnum):
     OPEN = 0
     CLOSE = 1
 
@@ -47,7 +47,7 @@ class Pinhole(Transition):
                 self.y,
                 greater_camera_dimesion * 0.75,
                 Color.BLACK,
-                greater_camera_dimesion * 0.75 - 1
+                greater_camera_dimesion * 0.99 - 1
             )
         if self.type == PinholeType.CLOSE:
             self.circle = Circle(

@@ -1,15 +1,15 @@
 import pygame
 from pygine.scenes import SceneManager, SceneType
 from pygine.utilities import Color, Input, InputType, StaticCamera
-from enum import Enum
+from enum import IntEnum
 
 
-class GameState(Enum):
+class GameState(IntEnum):
     QUIT = 0
     RUNNING = 1
 
 
-class Orientaion(Enum):
+class Orientaion(IntEnum):
     LANDSCAPE = 0
     PORTRAIT = 1
 

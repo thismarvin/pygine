@@ -1,17 +1,17 @@
 from pygame import Rect
 from pygine.entities import *
-from pygine.math import Vector2
+from pygine.maths import Vector2
 from pygine.transitions import Pinhole, PinholeType
 from pygine.utilities import Camera, Input, InputType
-from enum import Enum
+from enum import IntEnum
 
 
-class SceneType(Enum):
+class SceneType(IntEnum):
     NONE = 0
     EXAMPLE = 1
 
 
-class Scene:
+class Scene(object):
     def __init__(self):
         self.next_scene = SceneType.NONE
         self.camera = Camera()

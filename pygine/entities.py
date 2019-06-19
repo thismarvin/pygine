@@ -2,10 +2,10 @@ from pygame import Rect
 from pygine.base import PygineObject
 from pygine.draw import draw_rectangle
 from pygine.geometry import Rectangle
-from pygine.math import Vector2
+from pygine.maths import Vector2
 from pygine.resource import Sprite, SpriteType
 from pygine.utilities import CameraType, Color, Input, InputType
-from enum import Enum
+from enum import IntEnum
 
 
 class Entity(PygineObject):
@@ -37,7 +37,7 @@ class Entity(PygineObject):
             "A class that inherits Entity did not implement the draw(surface) method")
 
 
-class Direction(Enum):
+class Direction(IntEnum):
     NONE = 0,
     UP = 1,
     DOWN = 2,
