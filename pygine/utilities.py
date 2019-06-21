@@ -1,6 +1,6 @@
 import pygame
-from pygine.math import Vector2
-from enum import Enum
+from pygine.maths import Vector2
+from enum import IntEnum
 
 
 class Color:
@@ -36,7 +36,7 @@ class Timer:
                 self.done = True
 
 
-class InputType(Enum):
+class InputType(IntEnum):
     NONE = 0
 
     UP = 1
@@ -113,7 +113,7 @@ class Input:
             self.timer.reset()
 
 
-class CameraType(Enum):
+class CameraType(IntEnum):
     DYNAMIC = 0
     STATIC = 1
 

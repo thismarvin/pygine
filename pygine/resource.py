@@ -1,10 +1,10 @@
 import pygame
 from pygine.base import PygineObject
 from pygine.draw import draw_image
-from enum import Enum
+from enum import IntEnum
 
 
-class SpriteType(Enum):
+class SpriteType(IntEnum):
     NONE = 0
     PLAYER = 1
     BLOCK = 2

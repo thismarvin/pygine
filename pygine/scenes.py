@@ -1,17 +1,36 @@
 from pygame import Rect
 from pygine.entities import *
+<<<<<<< HEAD
 from pygine.math import Vector2
 from pygine.transitions import Pinhole, TransitionType
+=======
+from pygine.maths import Vector2
+from pygine.transitions import Pinhole, PinholeType
+>>>>>>> 10145a13fc59616260f857a7212ae62dc9d90986
 from pygine.utilities import Camera, Input, InputType
 from enum import IntEnum
 
 
 class SceneType(IntEnum):
+<<<<<<< HEAD
     EXAMPLE = 0
 
 
 class SceneManager:
     def __init__(self):        
+=======
+    NONE = 0
+    EXAMPLE = 1
+
+
+class Scene(object):
+    def __init__(self):
+        self.next_scene = SceneType.NONE
+        self.camera = Camera()
+        self.camera_location = Vector2(0, 0)
+        self.bounds = Rect(0, 0, Camera.BOUNDS.width, Camera.BOUNDS.height)
+        self.entities = []
+>>>>>>> 10145a13fc59616260f857a7212ae62dc9d90986
         self.input = Input()
         self.__reset()
 
