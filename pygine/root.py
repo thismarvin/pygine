@@ -29,7 +29,7 @@ class Game:
         Game.state = GameState.RUNNING
         self.delta_time = 0
         self.ticks = 0
-        self.scene_manager = SceneManager(SceneType.EXAMPLE)
+        self.scene_manager = SceneManager()
         self.input = Input()
 
     def initialize_pygame(self):
