@@ -25,7 +25,7 @@ class Entity(PygineObject):
         super().set_location(x, y)
         self.__bounds_that_actually_draw_correctly.set_location(self.x, self.y)
 
-    def update(self, delta_time):
+    def update(self, delta_time, entities):
         raise NotImplementedError(
             "A class that inherits Entity did not implement the update(delta_time) method")
 
@@ -159,7 +159,7 @@ class Block(Entity):
         super(Block, self).__init__(x, y, 32, 24)
         self.sprite = Sprite(self.x, self.y - 8, SpriteType.BLOCK)
 
-    def update(self, delta_time):
+    def update(self, delta_time, entities):
         pass
 
     def draw(self, surface):
