@@ -2,16 +2,12 @@ from enum import IntEnum
 from pygine.base import PygineObject
 from pygine.geometry import Circle
 from pygine.utilities import Camera, CameraType, Color
-<<<<<<< HEAD
 from pygine.triggers import *
 
 
 class TransitionType(IntEnum):
     PINHOLE_OPEN = 1
     PINHOLE_CLOSE = 2
-=======
-from enum import IntEnum
->>>>>>> 10145a13fc59616260f857a7212ae62dc9d90986
 
 
 class Transition(PygineObject):
@@ -36,14 +32,6 @@ class Transition(PygineObject):
             "A class that inherits Transition did not implement the draw(surface) method")
 
 
-<<<<<<< HEAD
-=======
-class PinholeType(IntEnum):
-    OPEN = 0
-    CLOSE = 1
-
-
->>>>>>> 10145a13fc59616260f857a7212ae62dc9d90986
 class Pinhole(Transition):
     def __init__(self, type):
         super(Pinhole, self).__init__(100, 250)
