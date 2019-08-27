@@ -1,9 +1,11 @@
+import pygame
+from enum import IntEnum
 from pygame import Rect
 from pygine.entities import *
 from pygine.maths import Vector2
 from pygine.transitions import Pinhole, TransitionType
-from pygine.utilities import Camera, Input, InputType
-from enum import IntEnum
+from pygine.utilities import Camera, Input, InputType, QuadTree
+from random import randint
 
 
 class SceneType(IntEnum):
@@ -114,6 +116,7 @@ class Scene(object):
         self.bounds = Rect(0, 0, Camera.BOUNDS.width, Camera.BOUNDS.height)
         self.sprites = []
         self.entities = []
+        self.entity_quad_tree = QuadTree(self.bounds, 4)
         self.shapes = []
         self.triggers = []
 
@@ -140,13 +143,17 @@ class Scene(object):
         # We can potentially add aditional logic for certain entites. For example, if the entity is a NPC then spawn it at (x, y)
 
     def __update_entities(self, delta_time):
+        self.entity_quad_tree.clear()
+        for i in range(len(self.entities)):
+            self.entity_quad_tree.insert(self.entities[i])
+
         for i in range(len(self.entities)-1, -1, -1):
-            self.entities[i].update(delta_time, self.entities)
+            self.entities[i].update(delta_time, self.entities, self.entity_quad_tree)
         self.entities.sort(key=lambda e: e.y + e.height)
 
-    def __update_triggers(self, delta_time, entities, manager):
+    def __update_triggers(self, delta_time, entities):
         for t in self.triggers:
-            t.update(delta_time, entities, manager)
+            t.update(delta_time, entities, self.manager)
 
     def __update_camera(self):
         self.camera_location = Vector2(
@@ -157,16 +164,19 @@ class Scene(object):
 
     def update(self, delta_time):
         self.__update_entities(delta_time)
-        self.__update_triggers(delta_time, self.entities, self.manager)
+        self.__update_triggers(delta_time, self.entities)
         self.__update_camera()
 
     def draw(self, surface):
+        #self.entity_quad_tree.draw(surface)
+
         for s in self.shapes:
             s.draw(surface, CameraType.DYNAMIC)
         for s in self.sprites:
             s.draw(surface, CameraType.DYNAMIC)
         for e in self.entities:
             e.draw(surface)
+        
         #for t in self.triggers:
         #    t.draw(surface, CameraType.DYNAMIC)
 

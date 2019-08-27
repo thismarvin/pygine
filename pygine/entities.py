@@ -1,3 +1,4 @@
+from enum import IntEnum
 from pygame import Rect
 from pygine.base import PygineObject
 from pygine.draw import draw_rectangle
@@ -6,7 +7,7 @@ from pygine import globals
 from pygine.maths import Vector2
 from pygine.resource import Sprite, SpriteType
 from pygine.utilities import CameraType, Color, Input, InputType
-from enum import IntEnum
+from random import randint
 
 
 class Entity(PygineObject):
@@ -26,9 +27,9 @@ class Entity(PygineObject):
         super(Entity, self).set_location(x, y)
         self.__bounds_that_actually_draw_correctly.set_location(self.x, self.y)
 
-    def update(self, delta_time, entities):
+    def update(self, delta_time, entities, entity_quad_tree):
         raise NotImplementedError(
-            "A class that inherits Entity did not implement the update(delta_time) method")
+            "A class that inherits Entity did not implement the update(delta_time, entities, entity_quad_tree) method")
 
     def draw_bounds(self, surface, camera_type):
         self.__bounds_that_actually_draw_correctly.draw(surface, camera_type)
@@ -72,13 +73,13 @@ class Kinetic(Entity):
     def calculate_scaled_speed(self, delta_time):
         self.move_speed = self.default_move_speed * delta_time
 
-    def collision(self, entities):
+    def collision(self, entities, entity_quad_tree):
         raise NotImplementedError(
-            "A class that inherits Kinetic did not implement the collision(surface) method")
+            "A class that inherits Kinetic did not implement the collision(entities, entity_quad_tree) method")
 
-    def update(self, delta_time, entities):
+    def update(self, delta_time, entities, entity_quad_tree):
         raise NotImplementedError(
-            "A class that inherits Kinetic did not implement the update(delta_time, entities) method")
+            "A class that inherits Kinetic did not implement the update(delta_time, entities, entity_quad_tree) method")
 
     def draw_collision_rectangles(self, surface):
         for r in self.collision_rectangles:
@@ -98,7 +99,6 @@ class Actor(Kinetic):
     def _update_input(self):
         raise NotImplementedError(
             "A class that inherits Actor did not implement the _update_input() method")
-
 
 
 class Player(Actor):
@@ -150,24 +150,24 @@ class Player(Actor):
         if self.collision_rectangles[3].colliderect(entity.bounds) and self.velocity.x > 0:
             self.set_location(entity.bounds.left - self.bounds.width, self.y)
 
-    def collision(self, entities):
+    def collision(self, entities, entity_quad_tree):
         for e in entities:
             if isinstance(e, Block):
                 self.rectanlge_collision_logic(e)
 
-    def update(self, delta_time, entities):
+    def update(self, delta_time, entities, entity_quad_tree):
         self.calculate_scaled_speed(delta_time)
         self._update_input(delta_time)
         self.update_collision_rectangles()
-        self.collision(entities)
+        self.collision(entities, entity_quad_tree)
 
-    def draw(self, surface):       
+    def draw(self, surface):
         if globals.debugging:
             self.draw_collision_rectangles(surface)
-            draw_rectangle(surface, self.bounds, CameraType.DYNAMIC, self.color)
+            draw_rectangle(surface, self.bounds,
+                           CameraType.DYNAMIC, self.color)
         else:
-             self.sprite.draw(surface, CameraType.DYNAMIC)
-
+            self.sprite.draw(surface, CameraType.DYNAMIC)
 
 
 class Block(Entity):
@@ -180,6 +180,7 @@ class Block(Entity):
 
     def draw(self, surface):
         if globals.debugging:
-            draw_rectangle(surface, self.bounds, CameraType.DYNAMIC, self.color)
+            draw_rectangle(surface, self.bounds,
+                           CameraType.DYNAMIC, self.color)
         else:
-             self.sprite.draw(surface, CameraType.DYNAMIC)
+            self.sprite.draw(surface, CameraType.DYNAMIC)
