@@ -3,8 +3,9 @@ from enum import IntEnum
 from pygame import Rect
 from pygine.entities import *
 from pygine.maths import Vector2
+from pygine.structures import QuadTree
 from pygine.transitions import Pinhole, TransitionType
-from pygine.utilities import Camera, Input, InputType, QuadTree
+from pygine.utilities import Camera, Input, InputType
 from random import randint
 
 
@@ -13,7 +14,7 @@ class SceneType(IntEnum):
 
 
 class SceneManager:
-    def __init__(self):        
+    def __init__(self):
         self.input = Input()
         self.__reset()
 
@@ -148,7 +149,8 @@ class Scene(object):
             self.entity_quad_tree.insert(self.entities[i])
 
         for i in range(len(self.entities)-1, -1, -1):
-            self.entities[i].update(delta_time, self.entities, self.entity_quad_tree)
+            self.entities[i].update(
+                delta_time, self.entities, self.entity_quad_tree)
         self.entities.sort(key=lambda e: e.y + e.height)
 
     def __update_triggers(self, delta_time, entities):
@@ -176,8 +178,8 @@ class Scene(object):
             s.draw(surface, CameraType.DYNAMIC)
         for e in self.entities:
             e.draw(surface)
-        
-        #for t in self.triggers:
+
+        # for t in self.triggers:
         #    t.draw(surface, CameraType.DYNAMIC)
 
 
@@ -187,10 +189,13 @@ class Example(Scene):
         self._reset()
         self._create_triggers()
 
-    def _reset(self):        
+    def _reset(self):
         self.entities = [
             Block(Camera.BOUNDS.width / 2 - 8, Camera.BOUNDS.height / 2)
         ]
+
+        for i in range(0, 16):
+            self.entities.append(Block(randint(32, Camera.BOUNDS.width - 32), randint(32, Camera.BOUNDS.height - 32)))
 
     def _create_triggers(self):
         self.triggers = []
