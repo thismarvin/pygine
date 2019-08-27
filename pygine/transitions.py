@@ -2,7 +2,6 @@ from enum import IntEnum
 from pygine.base import PygineObject
 from pygine.geometry import Circle
 from pygine.utilities import Camera, CameraType, Color
-from pygine.triggers import *
 
 
 class TransitionType(IntEnum):
@@ -48,12 +47,26 @@ class Pinhole(Transition):
                 self.y,
                 greater_camera_dimesion * 0.75,
                 Color.BLACK,
-                greater_camera_dimesion * 0.99 - 1
+                greater_camera_dimesion * 0.75 - 1
+            )
+            self.circle2 = Circle(
+                self.x,
+                self.y - 1,
+                greater_camera_dimesion * 0.75,
+                Color.BLACK,
+                greater_camera_dimesion * 0.75 - 1
             )
         if self.type == TransitionType.PINHOLE_CLOSE:
             self.circle = Circle(
                 self.x,
                 self.y,
+                greater_camera_dimesion * 0.75,
+                Color.BLACK,
+                1
+            )
+            self.circle2 = Circle(
+                self.x,
+                self.y - 1,
                 greater_camera_dimesion * 0.75,
                 Color.BLACK,
                 1
@@ -67,18 +80,23 @@ class Pinhole(Transition):
             if self.circle.thickness > 10:
                 self.circle.set_thickness(
                     self.circle.thickness - self.speed * delta_time)
+                self.circle2.set_thickness(self.circle.thickness)
             else:
                 self.circle.set_thickness(10)
+                self.circle2.set_thickness(self.circle.thickness)
                 self.done = True
         if self.type == TransitionType.PINHOLE_CLOSE:
             if self.circle.thickness < self.circle.radius:
                 self.circle.set_thickness(
                     self.circle.thickness + self.speed * delta_time)
+                self.circle2.set_thickness(self.circle.thickness)
             else:
                 self.circle.set_thickness(0)
+                self.circle2.set_thickness(self.circle.thickness)
                 self.done = True
 
         self.speed += self.acceleration * delta_time
 
     def draw(self, surface):
         self.circle.draw(surface, CameraType.STATIC)
+        self.circle2.draw(surface, CameraType.STATIC)
