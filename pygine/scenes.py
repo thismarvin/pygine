@@ -70,8 +70,8 @@ class SceneManager:
     def __change_scenes(self):
         self.__current_scene = self.__next_scene
 
-    def __update_input(self):
-        self.input.update()
+    def __update_input(self, delta_time):
+        self.input.update(delta_time)
         if self.input.pressing(InputType.RESET):
             self.__reset()
 
@@ -86,7 +86,7 @@ class SceneManager:
         assert (self.__current_scene != None), \
             "It looks like you never set a starting scene! Make sure to call __set_starting_scene(starting_scene_type)"
 
-        self.__update_input()
+        self.__update_input(delta_time)
         self.__update_transition(delta_time)
         self.__current_scene.update(delta_time)
 
