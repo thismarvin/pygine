@@ -1,5 +1,5 @@
 import pygame
-import pygine.globals
+from pygine import globals
 from pygine.resource import load_content
 from pygine.scenes import *
 from pygine.utilities import Color, Input, InputType, StaticCamera
@@ -41,6 +41,7 @@ class Game:
         self.ticks = 0
         self.scene_manager = SceneManager()
         self.input = Input()
+
 
     def __initialize_pygame(self):
         pygame.init()
@@ -140,7 +141,7 @@ class Game:
         if self.input.pressing(InputType.TOGGLE_FULLSCREEN):
             self.__toggle_fullscreen()
         if self.input.pressing(InputType.TOGGLE_DEBUG):
-            pygine.globals.debug = not pygine.globals.debug
+            globals.debugging = not globals.debugging
 
     def __update_events(self):
         for event in pygame.event.get():

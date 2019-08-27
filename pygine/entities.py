@@ -2,6 +2,7 @@ from pygame import Rect
 from pygine.base import PygineObject
 from pygine.draw import draw_rectangle
 from pygine.geometry import Rectangle
+from pygine import globals
 from pygine.maths import Vector2
 from pygine.resource import Sprite, SpriteType
 from pygine.utilities import CameraType, Color, Input, InputType
@@ -160,8 +161,13 @@ class Player(Actor):
         self.update_collision_rectangles()
         self.collision(entities)
 
-    def draw(self, surface):
-        self.sprite.draw(surface, CameraType.DYNAMIC)
+    def draw(self, surface):       
+        if globals.debugging:
+            self.draw_collision_rectangles(surface)
+            draw_rectangle(surface, self.bounds, CameraType.DYNAMIC, self.color)
+        else:
+             self.sprite.draw(surface, CameraType.DYNAMIC)
+
 
 
 class Block(Entity):
@@ -173,4 +179,7 @@ class Block(Entity):
         pass
 
     def draw(self, surface):
-        self.sprite.draw(surface, CameraType.DYNAMIC)
+        if globals.debugging:
+            draw_rectangle(surface, self.bounds, CameraType.DYNAMIC, self.color)
+        else:
+             self.sprite.draw(surface, CameraType.DYNAMIC)
