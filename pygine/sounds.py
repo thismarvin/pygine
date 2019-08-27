@@ -15,7 +15,7 @@ def load_sound_paths():
 
     MUSIC_PATH = path + '/assets/music/'
     SOUND_PATH = path + '/assets/sounds/'
-    
+
     pygame.mixer.init()
     music.set_volume(0.80)
 

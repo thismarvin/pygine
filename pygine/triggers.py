@@ -43,8 +43,8 @@ class CollisionTrigger(Trigger):
     def __collision(self, entities, entity_quad_tree, manager):
         self.query_result = entity_quad_tree.query(self.bounds)
         for e in self.query_result:
-             if e.bounds.colliderect(self.bounds):
-                self._move_entity_to_next_scene(e, manager)           
+            if e.bounds.colliderect(self.bounds):
+                self._move_entity_to_next_scene(e, manager)
 
     def update(self, delta_time, entities, entity_quad_tree, manager):
         self.__collision(entities, entity_quad_tree, manager)

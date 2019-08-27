@@ -20,13 +20,9 @@ def load_content():
 
     SPRITE_SHEET = pygame.image.load(
         path + "/assets/sprites/sprites.png"
-        #'/home/cpi/games/Python/pygine/pygine/assets/sprites/sprites.png' if pygine.globals.on_cpi
-        #else 'pygine/assets/sprites/sprites.png'
     )
     TEXT_SHEET = pygame.image.load(
         path + "/assets/sprites/font.png"
-        #'/home/cpi/games/Python/pygine/pygine/assets/sprites/font.png' if pygine.globals.on_cpi
-        #else 'pygine/assets/sprites/font.png'
     )
     load_sound_paths()
 
@@ -114,7 +110,7 @@ class Animation:
 
 class Text(PygineObject):
     def __init__(self, x, y, value):
-        super(Text, self).__init__(x, y, 15, 15)
+        super(Text, self).__init__(x, y, 8, 8)
 
         self.value = value
         self.set_value(self.value)

@@ -32,8 +32,14 @@ def draw_line(surface, x1, y1, x2, y2, camera_type, color=Color.WHITE, thickness
     pygame.draw.line(
         surface,
         color,
-        [__scaled_location(x1, y1, camera_type).x, __scaled_location(x1, y1, camera_type).y],
-        [__scaled_location(x2, y2, camera_type).x, __scaled_location(x2, y2, camera_type).y],
+        [
+            __scaled_location(x1, y1, camera_type).x,
+            __scaled_location(x1, y1, camera_type).y
+        ],
+        [
+            __scaled_location(x2, y2, camera_type).x,
+            __scaled_location(x2, y2, camera_type).y
+        ],
         int(__scaled_value(thickness))
     )
 
