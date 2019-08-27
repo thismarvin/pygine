@@ -105,6 +105,7 @@ class Player(Actor):
     def __init__(self, x, y):
         super(Player, self).__init__(x, y, 14, 8, 50)
         self.sprite = Sprite(self.x - 9, self.y - 24, SpriteType.PLAYER)
+        self.query_result = None
 
     def set_location(self, x, y):
         super(Player, self).set_location(x, y)
@@ -151,7 +152,18 @@ class Player(Actor):
             self.set_location(entity.bounds.left - self.bounds.width, self.y)
 
     def collision(self, entities, entity_quad_tree):
-        for e in entities:
+        if (globals.debugging):
+            for e in entities:
+                e.set_color(Color.WHITE)
+
+        self.area = Rect(self.x - 32, self.y - 24,
+                         self.width + 64, self.height + 48)
+
+        self.query_result = entity_quad_tree.query(self.area)
+        for e in self.query_result:
+            if (globals.debugging):
+                e.set_color(Color.RED)
+                    
             if isinstance(e, Block):
                 self.rectanlge_collision_logic(e)
 
@@ -166,6 +178,9 @@ class Player(Actor):
             self.draw_collision_rectangles(surface)
             draw_rectangle(surface, self.bounds,
                            CameraType.DYNAMIC, self.color)
+
+            draw_rectangle(surface, self.area,
+                           CameraType.DYNAMIC, self.color, 1)
         else:
             self.sprite.draw(surface, CameraType.DYNAMIC)
 

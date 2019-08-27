@@ -170,7 +170,8 @@ class Scene(object):
         self.__update_camera()
 
     def draw(self, surface):
-        #self.entity_quad_tree.draw(surface)
+        if globals.debugging:
+            self.entity_quad_tree.draw(surface)
 
         for s in self.shapes:
             s.draw(surface, CameraType.DYNAMIC)
