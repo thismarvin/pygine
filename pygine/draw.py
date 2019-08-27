@@ -14,7 +14,7 @@ def __scaled_value(value):
     return value * Camera.scale
 
 
-def draw_rectangle(surface, rect, camera_type, color=Color.WHITE):
+def draw_rectangle(surface, rect, camera_type, color=Color.WHITE, thickness=0):
     pygame.draw.rect(
         surface,
         color,
@@ -23,7 +23,8 @@ def draw_rectangle(surface, rect, camera_type, color=Color.WHITE):
             __scaled_location(rect.x, rect.y, camera_type).y,
             __scaled_value(rect.width),
             __scaled_value(rect.height)
-        )
+        ),
+        thickness
     )
 
 
