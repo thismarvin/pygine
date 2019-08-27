@@ -4,9 +4,10 @@ from pygine.base import PygineObject
 from pygine.draw import draw_rectangle
 from pygine.geometry import Rectangle
 from pygine import globals
+from pygine.input import InputType, pressed, pressing
 from pygine.maths import Vector2
 from pygine.resource import Sprite, SpriteType
-from pygine.utilities import CameraType, Color, Input, InputType
+from pygine.utilities import CameraType, Color
 from random import randint
 
 
@@ -31,7 +32,7 @@ class Entity(PygineObject):
         raise NotImplementedError(
             "A class that inherits Entity did not implement the update(delta_time, entities, entity_quad_tree) method")
 
-    def draw_bounds(self, surface, camera_type):
+    def _draw_bounds(self, surface, camera_type):
         self.__bounds_that_actually_draw_correctly.draw(surface, camera_type)
 
     def draw(self, surface):
@@ -57,7 +58,7 @@ class Kinetic(Entity):
         self.collision_rectangles = []
         self.collision_width = 0
 
-    def update_collision_rectangles(self):
+    def _update_collision_rectangles(self):
         self.collision_width = 2
         self.collision_rectangles = [
             Rect(self.x + self.collision_width, self.y - self.collision_width,
@@ -70,18 +71,22 @@ class Kinetic(Entity):
                  self.collision_width, self.height - self.collision_width * 2)
         ]
 
-    def calculate_scaled_speed(self, delta_time):
+    def _calculate_scaled_speed(self, delta_time):
         self.move_speed = self.default_move_speed * delta_time
 
-    def collision(self, entities, entity_quad_tree):
+    def _apply_force(self, delta_time):
         raise NotImplementedError(
-            "A class that inherits Kinetic did not implement the collision(entities, entity_quad_tree) method")
+            "A class that inherits Kinetic did not implement the _apply_force(delta_time) method")
+
+    def _collision(self, entities, entity_quad_tree):
+        raise NotImplementedError(
+            "A class that inherits Kinetic did not implement the _collision(entities, entity_quad_tree) method")
 
     def update(self, delta_time, entities, entity_quad_tree):
         raise NotImplementedError(
             "A class that inherits Kinetic did not implement the update(delta_time, entities, entity_quad_tree) method")
 
-    def draw_collision_rectangles(self, surface):
+    def _draw_collision_rectangles(self, surface):
         for r in self.collision_rectangles:
             draw_rectangle(
                 surface,
@@ -94,7 +99,6 @@ class Kinetic(Entity):
 class Actor(Kinetic):
     def __init__(self, x, y, width, height, speed):
         super(Actor, self).__init__(x, y, width, height, speed)
-        self.input = Input()
 
     def _update_input(self):
         raise NotImplementedError(
@@ -111,33 +115,29 @@ class Player(Actor):
         super(Player, self).set_location(x, y)
         self.sprite.set_location(self.x - 9, self.y - 24)
 
-    def move(self, direction=Direction.NONE):
-        self.facing = direction
-        if self.facing == Direction.UP:
-            self.set_location(self.x, self.y - self.move_speed)
-            self.velocity.y = -1
-        if self.facing == Direction.DOWN:
-            self.set_location(self.x, self.y + self.move_speed)
-            self.velocity.y = 1
-        if self.facing == Direction.LEFT:
-            self.set_location(self.x - self.move_speed, self.y)
-            self.velocity.x = -1
-        if self.facing == Direction.RIGHT:
-            self.set_location(self.x + self.move_speed, self.y)
-            self.velocity.x = 1
+    def _apply_force(self, delta_time):
+        self.set_location(self.x + self.velocity.x, self.y + self.velocity.y)
 
-    def _update_input(self, delta_time):
-        self.input.update(delta_time)
-        if self.input.pressing(InputType.UP):
-            self.move(Direction.UP)
-        if self.input.pressing(InputType.DOWN):
-            self.move(Direction.DOWN)
-        if self.input.pressing(InputType.LEFT):
-            self.move(Direction.LEFT)
-        if self.input.pressing(InputType.RIGHT):
-            self.move(Direction.RIGHT)
+    def _update_input(self):
+        if pressing(InputType.UP) and not pressing(InputType.DOWN):
+            self.velocity.y = -1 * self.move_speed
 
-    def rectanlge_collision_logic(self, entity):
+        if pressing(InputType.DOWN) and not pressing(InputType.UP):
+            self.velocity.y = 1 * self.move_speed
+
+        if not pressing(InputType.UP) and not pressing(InputType.DOWN):
+            self.velocity.y = 0
+
+        if pressing(InputType.LEFT) and not pressing(InputType.RIGHT):
+            self.velocity.x = -1 * self.move_speed
+
+        if pressing(InputType.RIGHT) and not pressing(InputType.LEFT):
+            self.velocity.x = 1 * self.move_speed
+
+        if not pressing(InputType.LEFT) and not pressing(InputType.RIGHT):
+            self.velocity.x = 0
+
+    def __rectanlge_collision_logic(self, entity):
         # Bottom
         if self.collision_rectangles[0].colliderect(entity.bounds) and self.velocity.y < 0:
             self.set_location(self.x, entity.bounds.bottom)
@@ -151,7 +151,7 @@ class Player(Actor):
         if self.collision_rectangles[3].colliderect(entity.bounds) and self.velocity.x > 0:
             self.set_location(entity.bounds.left - self.bounds.width, self.y)
 
-    def collision(self, entities, entity_quad_tree):
+    def _collision(self, entities, entity_quad_tree):
         if (globals.debugging):
             for e in entities:
                 e.set_color(Color.WHITE)
@@ -163,19 +163,20 @@ class Player(Actor):
         for e in self.query_result:
             if (globals.debugging):
                 e.set_color(Color.RED)
-                    
+
             if isinstance(e, Block):
-                self.rectanlge_collision_logic(e)
+                self.__rectanlge_collision_logic(e)
 
     def update(self, delta_time, entities, entity_quad_tree):
-        self.calculate_scaled_speed(delta_time)
-        self._update_input(delta_time)
-        self.update_collision_rectangles()
-        self.collision(entities, entity_quad_tree)
+        self._calculate_scaled_speed(delta_time)
+        self._update_input()
+        self._apply_force(delta_time)
+        self._update_collision_rectangles()
+        self._collision(entities, entity_quad_tree)
 
     def draw(self, surface):
         if globals.debugging:
-            self.draw_collision_rectangles(surface)
+            self._draw_collision_rectangles(surface)
             draw_rectangle(surface, self.bounds,
                            CameraType.DYNAMIC, self.color)
 
