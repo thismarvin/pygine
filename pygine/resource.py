@@ -1,8 +1,9 @@
+import os
 import pygame
-import pygine.globals
 from enum import IntEnum
 from pygine.base import PygineObject
 from pygine.draw import draw_image
+from pygine import globals
 from pygine.sounds import load_sound_paths
 from pygine.utilities import Timer
 
@@ -14,13 +15,18 @@ TEXT_SHEET = None
 def load_content():
     global SPRITE_SHEET
     global TEXT_SHEET
+
+    path = os.path.dirname(os.path.abspath(__file__))
+
     SPRITE_SHEET = pygame.image.load(
-        '/home/cpi/games/Python/pygine/pygine/assets/sprites/sprites.png' if pygine.globals.on_cpi
-        else 'pygine/assets/sprites/sprites.png'
+        path + "/assets/sprites/sprites.png"
+        #'/home/cpi/games/Python/pygine/pygine/assets/sprites/sprites.png' if pygine.globals.on_cpi
+        #else 'pygine/assets/sprites/sprites.png'
     )
     TEXT_SHEET = pygame.image.load(
-        '/home/cpi/games/Python/pygine/pygine/assets/sprites/font.png' if pygine.globals.on_cpi
-        else 'pygine/assets/sprites/font.png'
+        path + "/assets/sprites/font.png"
+        #'/home/cpi/games/Python/pygine/pygine/assets/sprites/font.png' if pygine.globals.on_cpi
+        #else 'pygine/assets/sprites/font.png'
     )
     load_sound_paths()
 
