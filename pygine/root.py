@@ -42,7 +42,6 @@ class Game:
         self.scene_manager = SceneManager()
         self.input = Input()
 
-
     def __initialize_pygame(self):
         pygame.init()
 
@@ -57,7 +56,6 @@ class Game:
         self.fullscreen = fullscreen
 
         if self.display_width == 320 and self.display_height == 240:
-            pygine.globals.on_cpi = True
             self.window_width = 320
             self.window_height = 240
             self.target_fps = 60
