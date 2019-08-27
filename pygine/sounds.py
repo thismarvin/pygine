@@ -1,7 +1,6 @@
 import os
 import pygame
 from pygame.mixer import Sound, music
-from pygine import globals
 
 MUSIC_PATH = ""
 SOUND_PATH = ""
