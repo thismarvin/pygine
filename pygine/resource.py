@@ -41,7 +41,7 @@ class Sprite(PygineObject):
 
     def set_sprite(self, sprite_type):
         self.type = sprite_type
-        self._load_sprite()
+        self.__load_sprite()
 
     def set_frame(self, frame, columns):
         self.__sprite_x = self.__original_sprite_x + frame % columns * self.width
@@ -57,7 +57,7 @@ class Sprite(PygineObject):
         self.__sprite_y += increment
         self.__apply_changes_to_sprite()
 
-    def _sprite_setup(self, sprite_x=0, sprite_y=0, width=0, height=0):
+    def __sprite_setup(self, sprite_x=0, sprite_y=0, width=0, height=0):
         self.__original_sprite_x = sprite_x
         self.__original_sprite_y = sprite_y
         self.__sprite_x = sprite_x
@@ -65,14 +65,17 @@ class Sprite(PygineObject):
         self.set_width(width)
         self.set_height(height)
 
-    def _load_sprite(self):
+    def __load_sprite(self):
         if self.type == SpriteType.NONE:
-            self._sprite_setup(1023, 1023, 1, 1)
+            self.__sprite_setup(1023, 1023, 1, 1)
+
+        elif (self.type == SpriteType.TEXT):
+            self.__sprite_setup(0, 0, 8, 8)
 
         elif (self.type == SpriteType.PLAYER):
-            self._sprite_setup(0, 0, 32, 32)
+            self.__sprite_setup(0, 0, 32, 32)
         elif (self.type == SpriteType.BLOCK):
-            self._sprite_setup(0, 32, 32, 32)
+            self.__sprite_setup(0, 32, 32, 32)
 
         self.__apply_changes_to_sprite()
 
