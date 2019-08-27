@@ -1,5 +1,7 @@
 import pygame
-from pygine.scenes import SceneManager, SceneType
+import pygine.globals
+from pygine.resource import load_content
+from pygine.scenes import *
 from pygine.utilities import Color, Input, InputType, StaticCamera
 from enum import IntEnum
 
@@ -17,25 +19,34 @@ class Orientaion(IntEnum):
 class Game:
     "A modest game engine used to streamline the development of a game made using pygame"
     state = GameState.QUIT
-    debug_mode = False
 
     def __init__(self):
-        self.initialize_pygame()
+        self.__initialize_pygame()
 
-        self.setup_window(640, 360, 60, False, Orientaion.LANDSCAPE, "Pygine")
-        self.setup_pixel_scene(320, 180)
-        self.setup_cameras()
+        self.__setup_window(
+            320 * 2, 180 * 2,
+            60,
+            False,
+            Orientaion.LANDSCAPE,
+            "Pygine"
+        )
+        self.__setup_pixel_scene(320, 180)
+        self.__setup_cameras()
+
+        load_content()
 
         Game.state = GameState.RUNNING
+        self.clock = pygame.time.Clock()
         self.delta_time = 0
         self.ticks = 0
         self.scene_manager = SceneManager()
         self.input = Input()
 
-    def initialize_pygame(self):
+    def __initialize_pygame(self):
         pygame.init()
 
-    def setup_window(self, window_width=1280, window_height=720, target_fps=60, fullscreen=False, orientation=Orientaion.LANDSCAPE, title="Game"):
+    def __setup_window(self, window_width=1280, window_height=720, target_fps=60, fullscreen=False,
+                       orientation=Orientaion.LANDSCAPE, title="Game"):
         self.display_width = pygame.display.Info().current_w
         self.display_height = pygame.display.Info().current_h
         self.window_width = window_width
@@ -43,6 +54,12 @@ class Game:
         self.target_fps = target_fps
         self.orientation = orientation
         self.fullscreen = fullscreen
+
+        if self.display_width == 320 and self.display_height == 240:
+            pygine.globals.on_cpi = True
+            self.window_width = 320
+            self.window_height = 240
+            self.target_fps = 60
 
         if self.fullscreen:
             self.window = pygame.display.set_mode(
@@ -53,11 +70,11 @@ class Game:
 
         pygame.display.set_caption(title)
 
-    def setup_pixel_scene(self, game_width=320, game_height=180):
+    def __setup_pixel_scene(self, game_width=320, game_height=180):
         self.game_width = game_width
         self.game_height = game_height
 
-    def setup_cameras(self):
+    def __setup_cameras(self):
         if self.orientation == Orientaion.LANDSCAPE:
             if self.fullscreen:
                 self.scale = self.display_height / self.game_height
@@ -96,10 +113,10 @@ class Game:
                 self.static_camera.apply_vertical_letterbox(
                     (self.window_height - self.game_height * self.scale) / 2)
 
-    def quit_game(self):
+    def __quit_game(self):
         Game.state = GameState.QUIT
 
-    def toggle_fullscreen(self):
+    def __toggle_fullscreen(self):
         self.fullscreen = not self.fullscreen
         if self.fullscreen:
             self.window = pygame.display.set_mode(
@@ -108,42 +125,43 @@ class Game:
             self.window = pygame.display.set_mode(
                 (self.window_width, self.window_height))
 
-        self.setup_cameras()
+        self.__setup_cameras()
 
-    def calculate_delta_time(self):
-        pygame.time.Clock().tick(self.target_fps)
+    def __calculate_delta_time(self):
+        self.clock.tick(self.target_fps)
+        # print(math.ceil(self.clock.get_fps()))
         self.delta_time = (pygame.time.get_ticks() - self.ticks) / 1000.0
         self.ticks = pygame.time.get_ticks()
 
-    def update_input(self):
-        self.input.update()
+    def __update_input(self, delta_time):
+        self.input.update(delta_time)
         if self.input.pressing(InputType.QUIT):
-            self.quit_game()
+            self.__quit_game()
         if self.input.pressing(InputType.TOGGLE_FULLSCREEN):
-            self.toggle_fullscreen()
+            self.__toggle_fullscreen()
         if self.input.pressing(InputType.TOGGLE_DEBUG):
-            Game.debug_mode = not Game.debug_mode
+            pygine.globals.debug = not pygine.globals.debug
 
-    def update_events(self):
+    def __update_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.quit_game()
+                self.__quit_game()
 
-    def clear_screen(self, color=Color.BLACK):
+    def __clear_screen(self, color=Color.BLACK):
         "Clear the screen in preparation for the next draw call."
         self.window.fill(color)
 
-    def update(self):
-        self.calculate_delta_time()
-        self.update_input()
+    def __update(self):
+        self.__calculate_delta_time()
+        self.__update_input(self.delta_time)
         self.scene_manager.update(self.delta_time)
-        self.update_events()
+        self.__update_events()
 
-    def draw(self):
+    def __draw(self):
         if Game.state == GameState.QUIT:
-            self.clear_screen(Color.BLACK)
+            self.__clear_screen(Color.BLACK)
         else:
-            self.clear_screen(Color.SKY_BLUE)
+            self.__clear_screen(Color.SKY_BLUE)
             self.scene_manager.draw(self.window)
 
         self.static_camera.draw(self.window)
@@ -151,6 +169,6 @@ class Game:
 
     def run(self):
         while Game.state != GameState.QUIT:
-            self.update()
-            self.draw()
+            self.__update()
+            self.__draw()
         pygame.quit()
