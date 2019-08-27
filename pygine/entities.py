@@ -175,7 +175,7 @@ class Block(Entity):
         super(Block, self).__init__(x, y, 32, 24)
         self.sprite = Sprite(self.x, self.y - 8, SpriteType.BLOCK)
 
-    def update(self, delta_time, entities):
+    def update(self, delta_time, entities, entity_quad_tree,):
         pass
 
     def draw(self, surface):

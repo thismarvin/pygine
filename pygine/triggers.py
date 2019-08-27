@@ -24,9 +24,9 @@ class Trigger(PygineObject):
         current_scene.entities.remove(entity)
         entity.set_location(self.end_location.x, self.end_location.y)
 
-    def update(self, delta_time, entities, manager):
+    def update(self, delta_time, entities, entity_quad_tree, manager):
         raise NotImplementedError(
-            "A class that inherits Trigger did not implement the update(delta_time, entities) method")
+            "A class that inherits Trigger did not implement the update(delta_time, entities, entity_quad_tree, manager) method")
 
     def draw(self, surface, camera_type):
         raise NotImplementedError(
@@ -38,14 +38,16 @@ class CollisionTrigger(Trigger):
         super(CollisionTrigger, self).__init__(
             x, y, width, height, end_location, next_scene)
         self.direction = direction
+        self.query_result = None
 
-    def __collision(self, entities, manager):
-        for e in entities:
-            if e.bounds.colliderect(self.bounds):
-                self._move_entity_to_next_scene(e, manager)
+    def __collision(self, entities, entity_quad_tree, manager):
+        self.query_result = entity_quad_tree.query(self.bounds)
+        for e in self.query_result:
+             if e.bounds.colliderect(self.bounds):
+                self._move_entity_to_next_scene(e, manager)           
 
-    def update(self, delta_time, entities, manager):
-        self.__collision(entities, manager)
+    def update(self, delta_time, entities, entity_quad_tree, manager):
+        self.__collision(entities, entity_quad_tree, manager)
 
     def draw(self, surface, camera_type):
         draw_rectangle(
@@ -60,9 +62,11 @@ class ButtonTrigger(Trigger):
         super(ButtonTrigger, self).__init__(
             x, y, width, height, end_location, next_scene)
         self.direction = direction
+        self.query_result = None
 
-    def __collision(self, entities, manager):
-        for e in entities:
+    def __collision(self, entities, entity_quad_tree, manager):
+        self.query_result = entity_quad_tree.query(self.bounds)
+        for e in self.query_result:
             if e.bounds.colliderect(self.bounds):
                 if isinstance(e, Player):
                     if e.input.pressing(InputType.A) and int(e.facing) == int(self.direction):
@@ -70,8 +74,8 @@ class ButtonTrigger(Trigger):
                 else:
                     self._move_entity_to_next_scene(e, manager)
 
-    def update(self, delta_time, entities, manager):
-        self.__collision(entities, manager)
+    def update(self, delta_time, entities, entity_quad_tree, manager):
+        self.__collision(entities, manager, entity_quad_tree)
 
     def draw(self, surface, camera_type):
         draw_rectangle(
