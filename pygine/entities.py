@@ -22,7 +22,7 @@ class Entity(PygineObject):
         self.__bounds_that_actually_draw_correctly.color = color
 
     def set_location(self, x, y):
-        super().set_location(x, y)
+        super(Entity, self).set_location(x, y)
         self.__bounds_that_actually_draw_correctly.set_location(self.x, self.y)
 
     def update(self, delta_time, entities):
@@ -124,7 +124,7 @@ class Player(Actor):
             self.set_location(self.x + self.move_speed, self.y)
             self.velocity.x = 1
 
-    def update_input(self, delta_time):
+    def _update_input(self, delta_time):
         self.input.update(delta_time)
         if self.input.pressing(InputType.UP):
             self.move(Direction.UP)
@@ -156,7 +156,7 @@ class Player(Actor):
 
     def update(self, delta_time, entities):
         self.calculate_scaled_speed(delta_time)
-        self.update_input(delta_time)
+        self._update_input(delta_time)
         self.update_collision_rectangles()
         self.collision(entities)
 

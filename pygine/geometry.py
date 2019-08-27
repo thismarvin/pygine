@@ -61,7 +61,7 @@ class Rectangle(Shape):
             ]
 
     def set_location(self, x, y):
-        super().set_location(x, y)
+        super(Rectangle, self).set_location(x, y)
         self.reset()
 
     def set_thickness(self, thickness):

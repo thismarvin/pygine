@@ -63,7 +63,7 @@ class ButtonTrigger(Trigger):
 
     def __collision(self, entities, manager):
         for e in entities:
-            if not isinstance(e, Building) and e.bounds.colliderect(self.bounds):
+            if e.bounds.colliderect(self.bounds):
                 if isinstance(e, Player):
                     if e.input.pressing(InputType.A) and int(e.facing) == int(self.direction):
                         self._move_entity_to_next_scene(e, manager)
