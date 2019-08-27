@@ -27,6 +27,16 @@ def draw_rectangle(surface, rect, camera_type, color=Color.WHITE):
     )
 
 
+def draw_line(surface, x1, y1, x2, y2, camera_type, color=Color.WHITE, thickness=1):
+    pygame.draw.line(
+        surface,
+        color,
+        [__scaled_location(x1, y1, camera_type).x, __scaled_location(x1, y1, camera_type).y],
+        [__scaled_location(x2, y2, camera_type).x, __scaled_location(x2, y2, camera_type).y],
+        int(__scaled_value(thickness))
+    )
+
+
 def draw_circle(surface, center, radius, camera_type, color=Color.WHITE, thickness=0):
     pygame.draw.circle(
         surface,
