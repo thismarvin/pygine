@@ -89,10 +89,20 @@ class Kinetic(Entity):
             )
 
 
-class Player(Kinetic):
+class Actor(Kinetic):
+    def __init__(self, x, y, width, height, speed):
+        super(Actor, self).__init__(x, y, width, height, speed)
+        self.input = Input()
+
+    def _update_input(self):
+        raise NotImplementedError(
+            "A class that inherits Actor did not implement the _update_input() method")
+
+
+
+class Player(Actor):
     def __init__(self, x, y):
         super(Player, self).__init__(x, y, 14, 8, 50)
-        self.input = Input()
         self.sprite = Sprite(self.x - 9, self.y - 24, SpriteType.PLAYER)
 
     def set_location(self, x, y):
@@ -114,8 +124,8 @@ class Player(Kinetic):
             self.set_location(self.x + self.move_speed, self.y)
             self.velocity.x = 1
 
-    def update_input(self):
-        self.input.update()
+    def update_input(self, delta_time):
+        self.input.update(delta_time)
         if self.input.pressing(InputType.UP):
             self.move(Direction.UP)
         if self.input.pressing(InputType.DOWN):
@@ -146,7 +156,7 @@ class Player(Kinetic):
 
     def update(self, delta_time, entities):
         self.calculate_scaled_speed(delta_time)
-        self.update_input()
+        self.update_input(delta_time)
         self.update_collision_rectangles()
         self.collision(entities)
 
