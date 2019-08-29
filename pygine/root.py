@@ -1,8 +1,11 @@
+import math
+import os
 import pygame
-from pygine import globals
-from pygine.resource import load_content
+from pygine.globals import toggle_debugging
+from pygine.input import get_dynamic_mouse_position, InputType, pressed, update_input
+from pygine.resource import load_content, Text
 from pygine.scenes import *
-from pygine.utilities import Color, Input, InputType, StaticCamera
+from pygine.utilities import Color, StaticCamera
 from enum import IntEnum
 
 
@@ -40,7 +43,9 @@ class Game:
         self.delta_time = 0
         self.ticks = 0
         self.scene_manager = SceneManager()
-        self.input = Input()
+
+        self.no_spam = False
+        self.fps_counter = Text(2, 2, "0")
 
     def __initialize_pygame(self):
         pygame.init()
@@ -55,7 +60,7 @@ class Game:
         self.orientation = orientation
         self.fullscreen = fullscreen
 
-        if self.display_width == 320 and self.display_height == 240:
+        if str(os.path.dirname(os.path.abspath(__file__)))[:9] == "/home/cpi":
             self.window_width = 320
             self.window_height = 240
             self.target_fps = 60
@@ -128,18 +133,24 @@ class Game:
 
     def __calculate_delta_time(self):
         self.clock.tick(self.target_fps)
-        # print(math.ceil(self.clock.get_fps()))
+        self.fps_counter.set_value(str(math.ceil(self.clock.get_fps())))
         self.delta_time = (pygame.time.get_ticks() - self.ticks) / 1000.0
         self.ticks = pygame.time.get_ticks()
 
     def __update_input(self, delta_time):
-        self.input.update(delta_time)
-        if self.input.pressing(InputType.QUIT):
+        update_input()
+
+        if pressed(InputType.QUIT):
             self.__quit_game()
-        if self.input.pressing(InputType.TOGGLE_FULLSCREEN):
+        if pressed(InputType.TOGGLE_FULLSCREEN):
             self.__toggle_fullscreen()
-        if self.input.pressing(InputType.TOGGLE_DEBUG):
-            globals.debugging = not globals.debugging
+
+        if self.no_spam and pressing(InputType.TOGGLE_DEBUG):
+            toggle_debugging()
+            self.no_spam = False
+
+        if not pressing(InputType.TOGGLE_DEBUG):
+            self.no_spam = True
 
     def __update_events(self):
         for event in pygame.event.get():
@@ -162,6 +173,9 @@ class Game:
         else:
             self.__clear_screen(Color.SKY_BLUE)
             self.scene_manager.draw(self.window)
+
+        if globals.debugging:
+            self.fps_counter.draw(self.window, CameraType.STATIC)
 
         self.static_camera.draw(self.window)
         pygame.display.update()

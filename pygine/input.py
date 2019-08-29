@@ -38,7 +38,6 @@ def update_input():
     if previous_key_state == None:
         previous_key_state = pygame.key.get_pressed()
 
-
 def pressed(type):
     "Returns True if the key was just pressed and not held down the previous frame."
     if type == InputType.UP:
@@ -66,9 +65,13 @@ def pressed(type):
     if type == InputType.Y:
         return not previous_key_state[pygame.K_i] and current_key_state[pygame.K_i]
     if type == InputType.SELECT:
-        return not previous_key_state[pygame.K_SPACE] and current_key_state[pygame.K_SPACE]
+        return (not previous_key_state[pygame.K_SPACE] and current_key_state[pygame.K_SPACE]) or \
+               (not previous_key_state[pygame.K_MINUS]
+                and current_key_state[pygame.K_MINUS])
     if type == InputType.START:
-        return not previous_key_state[pygame.K_KP_ENTER] and current_key_state[pygame.K_KP_ENTER]
+        return (not previous_key_state[pygame.K_RETURN] and current_key_state[pygame.K_RETURN]) or \
+               (not previous_key_state[pygame.K_PLUS]
+                and current_key_state[pygame.K_PLUS])
     if type == InputType.RESET:
         return not previous_key_state[pygame.K_r] and current_key_state[pygame.K_r]
     if type == InputType.TOGGLE_FULLSCREEN:
@@ -102,18 +105,16 @@ def pressing(type):
     if type == InputType.Y:
         return current_key_state[pygame.K_i]
     if type == InputType.SELECT:
-        return current_key_state[pygame.K_SPACE]
+        return current_key_state[pygame.K_SPACE] or current_key_state[pygame.K_MINUS]
     if type == InputType.START:
-        return current_key_state[pygame.K_KP_ENTER]
+        return current_key_state[pygame.K_RETURN] or current_key_state[pygame.K_PLUS]
     if type == InputType.RESET:
         return current_key_state[pygame.K_r]
     if type == InputType.TOGGLE_FULLSCREEN:
         return current_key_state[pygame.K_F11]
     if type == InputType.TOGGLE_DEBUG:
         return current_key_state[pygame.K_F3] or \
-            (pressing(InputType.START) and
-             pressing(InputType.SELECT) and
-             pressing(InputType.B))
+            (pressing(InputType.START) and pressing(InputType.SELECT) and pressing(InputType.A))
     if type == InputType.QUIT:
         return current_key_state[pygame.K_ESCAPE] or current_key_state[pygame.K_BACKSPACE]
 
