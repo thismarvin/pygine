@@ -4,7 +4,7 @@ from pygame import Rect
 from pygine.entities import *
 from pygine.input import InputType, pressed
 from pygine.maths import Vector2
-from pygine.structures import QuadTree
+from pygine.structures import Quadtree
 from pygine.transitions import Pinhole, TransitionType
 from pygine.utilities import Camera
 from random import randint
@@ -127,9 +127,9 @@ class Scene(object):
         self.sprites = []      
         self.shapes = []
         self.triggers = []
-        self.entity_quad_tree = QuadTree(self.bounds, 4)
-        self.sprite_quad_tree = QuadTree(self.bounds, 4)        
-        self.shape_quad_tree = QuadTree(self.bounds, 4)
+        self.entity_quad_tree = Quadtree(self.bounds, 4)
+        self.sprite_quad_tree = Quadtree(self.bounds, 4)        
+        self.shape_quad_tree = Quadtree(self.bounds, 4)
         self.query_result = None
         self.leave_transition_type = TransitionType.PINHOLE_CLOSE
         self.enter_transition_type = TransitionType.PINHOLE_OPEN
@@ -138,9 +138,9 @@ class Scene(object):
     
     def set_scene_bounds(self, bounds):
         self.bounds = bounds
-        self.sprite_quad_tree = QuadTree(self.bounds, 4)
-        self.entity_quad_tree = QuadTree(self.bounds, 4)
-        self.shape_quad_tree = QuadTree(self.bounds, 4)
+        self.sprite_quad_tree = Quadtree(self.bounds, 4)
+        self.entity_quad_tree = Quadtree(self.bounds, 4)
+        self.shape_quad_tree = Quadtree(self.bounds, 4)
 
     def relay_player(self, player):
         self.player = player
