@@ -32,6 +32,7 @@ class SpriteType(IntEnum):
     TEXT = 1
     PLAYER = 2
     BLOCK = 3
+    TILE = 4
 
 
 class Sprite(PygineObject):
@@ -75,7 +76,9 @@ class Sprite(PygineObject):
         elif (self.type == SpriteType.PLAYER):
             self.__sprite_setup(0, 0, 32, 32)
         elif (self.type == SpriteType.BLOCK):
-            self.__sprite_setup(0, 32, 32, 32)
+            self.__sprite_setup(0, 32, 64, 32)
+        elif (self.type == SpriteType.TILE):
+            self.__sprite_setup(32, 0, 32, 32)
 
         self.__apply_changes_to_sprite()
 
