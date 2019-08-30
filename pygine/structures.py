@@ -1,9 +1,10 @@
+import math
 from pygame import Rect
 from pygine.draw import draw_rectangle
 from pygine.utilities import CameraType, Color
 
 
-class QuadTree:
+class Quadtree:
     def __init__(self, boundary, capacity):
         self.boundary = boundary
         self.capacity = capacity
@@ -39,11 +40,11 @@ class QuadTree:
 
         return False
 
-    def query(self, area):
-        result = []
-
+    def query(self, area):    
         if not area.colliderect(self.boundary):
-            return result
+            return []
+
+        result = []
 
         for i in range(len(self.objects)):
             if self.objects[i] == None:
@@ -80,7 +81,7 @@ class QuadTree:
 
     def __subdivide(self):
         self.divided = True
-        self.topLeft = QuadTree(
+        self.topLeft = Quadtree(
             Rect(
                 self.boundary.x,
                 self.boundary.y,
@@ -89,7 +90,7 @@ class QuadTree:
             ),
             self.capacity
         )
-        self.topRight = QuadTree(
+        self.topRight = Quadtree(
             Rect(
                 self.boundary.x + self.boundary.width / 2,
                 self.boundary.y,
@@ -98,7 +99,7 @@ class QuadTree:
             ),
             self.capacity
         )
-        self.bottomRight = QuadTree(
+        self.bottomRight = Quadtree(
             Rect(
                 self.boundary.x + self.boundary.width / 2,
                 self.boundary.y + self.boundary.height / 2,
@@ -107,7 +108,7 @@ class QuadTree:
             ),
             self.capacity
         )
-        self.bottomLeft = QuadTree(
+        self.bottomLeft = Quadtree(
             Rect(
                 self.boundary.x,
                 self.boundary.y + self.boundary.height / 2,
@@ -131,3 +132,98 @@ class QuadTree:
             self.topRight.draw(surface)
             self.bottomRight.draw(surface)
             self.bottomLeft.draw(surface)
+
+
+class Bin:
+    def __init__(self, boundary, power_of_two):
+        self.boundary = boundary
+        self.power_of_two = power_of_two
+        self.cell_size = 1 << self.power_of_two
+
+        self.columns = int(math.ceil(float(self.boundary.width / self.power_of_two)))
+        self.rows = int(math.ceil(float(self.boundary.height / self.power_of_two)))
+
+        self.buckets = [set() for i in range(self.rows * self.columns)]
+
+    def insert(self, pygine_object):
+        if not pygine_object.bounds.colliderect(self.boundary):
+            return False
+
+        ids = self.__hash_ids(pygine_object.bounds)
+
+        for i in ids:
+            self.buckets[i].add(pygine_object)
+
+        return len(ids) > 0
+
+    def query(self, area):
+        if not area.colliderect(self.boundary):
+            return []
+
+        result = []
+        objects = set()
+        ids = self.__hash_ids(area)
+
+        for i in ids:
+            for pygine_object in self.buckets[i]:
+                objects.add(pygine_object)
+
+        for pygine_object in objects:
+            result.append(pygine_object)
+
+        objects.clear()
+        ids.clear()
+
+        return result
+
+    def clear(self):
+        for i in range(len(self.buckets)):
+            self.buckets[i].clear()
+
+    def __hash_ids(self, bounds):
+        result = set()
+        x = -1
+        y = -1
+        
+        if bounds.width > self.cell_size or bounds.height > self.cell_size:
+            for height_offset in range(0, bounds.height, self.cell_size):
+                for width_offset in range(0, bounds.width, self.cell_size):
+                    x = int(bounds.x + width_offset) >> self.power_of_two
+                    y = int(bounds.y + height_offset) >> self.power_of_two
+
+                    if x < 0 or x >= self.columns or y < 0 or y >= self.rows:
+                        continue
+
+                    result.add(self.columns * y + x)
+
+        for i in range(4):
+            if i == 0:
+                x = int(bounds.x) >> self.power_of_two
+                y = int(bounds.y) >> self.power_of_two
+            elif i == 1:
+                x = int(bounds.x + bounds.width) >> self.power_of_two
+                y = int(bounds.y) >> self.power_of_two
+            elif i == 2:
+                x = int(bounds.x + bounds.width) >> self.power_of_two
+                y = int(bounds.y + bounds.height) >> self.power_of_two
+            elif i == 3:
+                x = int(bounds.x) >> self.power_of_two
+                y = int(bounds.y + bounds.height) >> self.power_of_two
+
+            if x < 0 or x >= self.columns or y < 0 or y >= self.rows:
+                continue
+
+            result.add(self.columns * y + x)
+
+        return result
+
+    def draw(self, surface):
+        for y in range(self.rows):
+            for x in range(self.columns):
+                draw_rectangle(
+                    surface,
+                    Rect(x * self.cell_size, y * self.cell_size, self.cell_size, self.cell_size),
+                    CameraType.DYNAMIC,
+                    Color.BLACK,
+                    1
+                )
