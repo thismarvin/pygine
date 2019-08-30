@@ -133,7 +133,7 @@ class Game:
 
     def __calculate_delta_time(self):
         self.clock.tick(self.target_fps)
-        self.fps_counter.set_value(str(math.ceil(self.clock.get_fps())))
+        self.fps_counter.set_value(str(int(math.ceil(self.clock.get_fps()))))
         self.delta_time = (pygame.time.get_ticks() - self.ticks) / 1000.0
         self.ticks = pygame.time.get_ticks()
 
