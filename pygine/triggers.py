@@ -17,7 +17,7 @@ class Trigger(PygineObject):
 
         if isinstance(entity, Player):
             manager.queue_next_scene(self.next_scene)
-            next_scene.relay_player(entity)
+            next_scene.relay_actor(entity)
         else:
             next_scene.relay_entity(entity)
 
