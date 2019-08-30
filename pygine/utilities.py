@@ -10,10 +10,16 @@ class Color:
     RED = (255, 0, 0)
     GREEN = (0, 255, 0)
     BLUE = (0, 0, 255)
-    SKY_BLUE = (41, 173, 255)
 
+    SKY_BLUE = (41, 173, 255)
     GRASS_GREEN = (0, 168, 68)
     OCEAN_BLUE = (60, 188, 252)
+    WOOD_BROWN = (172, 124, 0)
+    GRAY = (120,120,120)
+    LIGHT_GRAY = (188, 188, 188)
+    LIGHT_BLUE = (104, 136, 252)
+    LIGHT_PINK = (248, 164, 192)
+    TEAL = (0, 136, 136)
 
 
 class Timer:
@@ -115,7 +121,7 @@ class StaticCamera:
             Color.BLACK,
             (
                 StaticCamera.horizontal_letterbox +
-                StaticCamera.BOUNDS.width * StaticCamera.scale + 1,
+                StaticCamera.BOUNDS.width * StaticCamera.scale,
                 -32 * StaticCamera.scale,
                 StaticCamera.horizontal_letterbox,
                 StaticCamera.BOUNDS.height * StaticCamera.scale + 64 * StaticCamera.scale
