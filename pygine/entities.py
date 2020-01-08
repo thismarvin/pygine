@@ -158,10 +158,10 @@ class Player(Actor):
                 e.set_color(Color.WHITE)
 
         self.area = Rect(
-           self.x - 52,
-           self.y - 16,
-           self.width + 52 * 2,
-           self.height + 16 * 2
+            self.x - 52,
+            self.y - 16,
+            self.width + 52 * 2,
+            self.height + 16 * 2
         )
 
         self.query_result = scene_data.entity_quad_tree.query(self.area)
@@ -254,11 +254,13 @@ class Boid(Kinetic):
 
     def _collision(self, scene_data):
         if self.x < -self.width:
-            self.set_location(scene_data.scene_bounds.width + self.width, self.y)
+            self.set_location(
+                scene_data.scene_bounds.width + self.width, self.y)
         if self.x > scene_data.scene_bounds.width + self.width:
             self.set_location(-self.width, self.y)
         if self.y < -self.height:
-            self.set_location(self.x, scene_data.scene_bounds.height + self.height)
+            self.set_location(
+                self.x, scene_data.scene_bounds.height + self.height)
         if self.y > scene_data.scene_bounds.height + self.height:
             self.set_location(self.x, -self.height)
 
@@ -352,7 +354,7 @@ class Boid(Kinetic):
         return steer
 
     def __update_flocking_behavior(self, scene_data):
-        self.query_result = scene_data.entity_bin.query(
+        self.query_result = scene_data.kinetic_quad_tree.query(
             Rect(
                 self.x - self.view_radius,
                 self.y - self.view_radius,

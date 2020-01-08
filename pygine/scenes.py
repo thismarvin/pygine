@@ -111,14 +111,18 @@ class SceneDataRelay(object):
         self.entities = None
         self.entity_quad_tree = None
         self.entity_bin = None
+        self.kinetic_quad_tree = None
+        self.actor = None
 
     def set_scene_bounds(self, bounds):
         self.scene_bounds = bounds
 
-    def update(self, entites, entity_quad_tree, entity_bin):
+    def update(self, entites, entity_quad_tree, entity_bin, kinetic_quad_tree, actor):
         self.entities = entites
         self.entity_quad_tree = entity_quad_tree
         self.entity_bin = entity_bin
+        self.kinetic_quad_tree = kinetic_quad_tree
+        self.actor = actor
 
 
 class Scene(object):
@@ -151,6 +155,7 @@ class Scene(object):
         self.sprite_quad_tree = Quadtree(self.scene_bounds, 4)
         self.shape_quad_tree = Quadtree(self.scene_bounds, 4)
         self.entity_quad_tree = Quadtree(self.scene_bounds, 4)
+        self.kinetic_quad_tree = Quadtree(self.scene_bounds, 4)
         self.entity_bin = Bin(self.scene_bounds, 4)
         self.query_result = None
         self.first_pass = True
@@ -165,10 +170,11 @@ class Scene(object):
         self.scene_data = SceneDataRelay()
         self.scene_data.set_scene_bounds(self.scene_bounds)
 
-    def setup(self, entities_are_uniform, maximum_entity_dimension = 0):
+    def setup(self, entities_are_uniform, maximum_entity_dimension=0):
         self.entities_are_uniform = entities_are_uniform
         if self.entities_are_uniform:
-            self.optimal_bin_size = int(math.ceil(math.log(2, maximum_entity_dimension)))
+            self.optimal_bin_size = int(
+                math.ceil(math.log(maximum_entity_dimension, 2)))
 
         self._reset()
         self._create_triggers()
@@ -177,7 +183,7 @@ class Scene(object):
         self.scene_bounds = bounds
         self.scene_data.set_scene_bounds(self.scene_bounds)
 
-        buffer = 8
+        buffer = 0
         modified_bounds = Rect(
             -buffer,
             -buffer,
@@ -188,7 +194,9 @@ class Scene(object):
         self.sprite_quad_tree = Quadtree(modified_bounds, 4)
         self.shape_quad_tree = Quadtree(modified_bounds, 4)
         self.entity_quad_tree = Quadtree(modified_bounds, 4)
-        self.entity_bin = Bin(modified_bounds, 5)
+        self.kinetic_quad_tree = Quadtree(self.scene_bounds, 4)
+        if self.entities_are_uniform:
+            self.entity_bin = Bin(modified_bounds, self.optimal_bin_size)
         self.first_pass = True
 
     def relay_actor(self, actor):
@@ -219,22 +227,29 @@ class Scene(object):
                 self.shape_quad_tree.insert(self.shapes[i])
             self.first_pass = False
 
-        self.entity_quad_tree.clear()
-        if self.entities_are_uniform:
-            self.entity_bin.clear()
-        for i in range(len(self.entities)):
-            self.entity_quad_tree.insert(self.entities[i])
+            self.entity_quad_tree.clear()
             if self.entities_are_uniform:
-                self.entity_bin.insert(self.entities[i])
+                self.entity_bin.clear()
+            for i in range(len(self.entities)):
+                if not isinstance(self.entities[i], Kinetic):
+                    self.entity_quad_tree.insert(self.entities[i])
+                    if self.entities_are_uniform:
+                        self.entity_bin.insert(self.entities[i])
+
+        self.kinetic_quad_tree.clear()
+        for i in range(len(self.entities)):
+            if isinstance(self.entities[i], Kinetic):
+                self.kinetic_quad_tree.insert(self.entities[i])
 
     def __update_entities(self, delta_time):
         for i in range(len(self.entities)-1, -1, -1):
             self.entities[i].update(delta_time, self.scene_data)
-        #self.entities.sort(key=lambda e: 1000 * (e.y + e.height) - e.x)
+            if self.entities[i].remove:
+                del self.entities[i]
 
     def __update_triggers(self, delta_time):
         for t in self.triggers:
-            t.update(delta_time, self.entities, self.manager)
+            t.update(delta_time, self.scene_data, self.manager)
 
     def __update_camera(self):
         if self.actor != None:
@@ -253,7 +268,9 @@ class Scene(object):
         self.scene_data.update(
             self.entities,
             self.entity_quad_tree,
-            self.entity_bin
+            self.entity_bin,
+            self.kinetic_quad_tree,
+            self.actor
         )
         self.__update_entities(delta_time)
         self.__update_triggers(delta_time)
@@ -270,20 +287,34 @@ class Scene(object):
         for s in self.query_result:
             s.draw(surface, CameraType.DYNAMIC)
 
+        self.query_result = self.entity_quad_tree.query(
+            self.camera_viewport.bounds)
+
+        for e in self.query_result:
+            e.draw(surface)
+
+        self.query_result = self.kinetic_quad_tree.query(
+            self.camera_viewport.bounds)
+
+        for e in self.query_result:
+            if not isinstance(e, Actor):
+                e.draw(surface)
+
+        if self.actor != None:
+            self.actor.draw(surface)
+
         if globals.debugging:
+            self.entity_quad_tree.draw(surface)
             for t in self.triggers:
                 t.draw(surface, CameraType.DYNAMIC)
 
-        self.query_result = self.entity_quad_tree.query(self.camera_viewport.bounds)
-        self.query_result.sort(key=lambda e: 1000 * (e.y + e.height) - e.x)
-        for e in self.query_result:
-            e.draw(surface)
 
 class TopDown(Scene):
     def __init__(self):
         super(TopDown, self).__init__()
-        self.setup(False)   
-        self.relay_actor(Player(self.scene_bounds.width / 2, self.scene_bounds.height / 2)) 
+        self.setup(False)
+        self.relay_actor(Player(self.scene_bounds.width /
+                                2, self.scene_bounds.height / 2))
 
     def _reset(self):
         self.set_scene_bounds(
@@ -299,7 +330,8 @@ class TopDown(Scene):
         for y in range(int(math.ceil(self.scene_bounds.height / 32))):
             for x in range(int(math.ceil(self.scene_bounds.width / 32))):
                 if randint(1, 10) <= 3:
-                    self.sprites.append(Sprite(x * 32, y * 32 - 8, SpriteType.TILE))
+                    self.sprites.append(
+                        Sprite(x * 32, y * 32 - 8, SpriteType.TILE))
 
         self.shapes = []
         self.shapes.append(
@@ -319,7 +351,7 @@ class TopDown(Scene):
 class Flocking(Scene):
     def __init__(self):
         super(Flocking, self).__init__()
-        self.setup(True, 16)  
+        self.setup(True, 16)
 
     def _reset(self):
         self.set_scene_bounds(
@@ -332,7 +364,7 @@ class Flocking(Scene):
 
         self.shapes = []
         self.shapes.append(Rectangle(
-            0, 0, self.scene_bounds.width, self.scene_bounds.height, Color.BLACK))
+            0, 0, self.scene_bounds.width, self.scene_bounds.height, Color.RED))
 
     def _create_triggers(self):
         self.triggers = []
