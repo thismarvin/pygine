@@ -41,7 +41,7 @@ class Vector2:
             self.y *= value
 
     def divide(self, value):
-        if isinstance(value, Vector2):
+        if isinstance(value, Vector2): 
             self.x /= value.x
             self.y /= value.y
         else:
