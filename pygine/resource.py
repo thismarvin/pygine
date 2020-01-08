@@ -58,6 +58,22 @@ class Sprite(PygineObject):
         self.__sprite_y += increment
         self.__apply_changes_to_sprite()
 
+    def flip_horizontally(self, flip):
+        if flip:
+            self.image = pygame.transform.flip(
+                self.image, True, False).convert_alpha()
+        else:
+            self.image = pygame.transform.flip(
+                self.image, False, False).convert_alpha()
+
+    def flip_vertically(self, flip):
+        if flip:
+            self.image = pygame.transform.flip(
+                self.image, False, True).convert_alpha()
+        else:
+            self.image = pygame.transform.flip(
+                self.image, False, False).convert_alpha()
+
     def __sprite_setup(self, sprite_x=0, sprite_y=0, width=0, height=0):
         self.__original_sprite_x = sprite_x
         self.__original_sprite_y = sprite_y
@@ -83,7 +99,8 @@ class Sprite(PygineObject):
         self.__apply_changes_to_sprite()
 
     def __apply_changes_to_sprite(self):
-        self.image = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+        self.image = pygame.Surface(
+            (self.width, self.height), pygame.SRCALPHA).convert_alpha()
 
         if self.type == SpriteType.TEXT:
             self.image.blit(TEXT_SHEET, (0, 0),
